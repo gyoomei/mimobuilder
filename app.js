@@ -560,7 +560,10 @@ async function profile(input) {
 
   try {
     let addr = raw;
-    if (raw.endsWith('.eth') || /^[a-zA-Z0-9-]+$/.test(raw)) {
+    // Hex address takes priority (must check first since 0x... matches the alphanumeric regex)
+    if (/^0x[a-fA-F0-9]{40}$/.test(raw)) {
+      addr = raw;
+    } else if (raw.endsWith('.eth') || /^[a-zA-Z][a-zA-Z0-9-]*$/.test(raw)) {
       // ENS resolution
       setLoadStep(lang==='en' ? 'resolving ENS' : 'resolving ENS');
       const resolved = await resolveENS(raw.endsWith('.eth') ? raw : raw + '.eth');
