@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>MiMoBuilder — Developer Wallet Profiler</title>
+<meta name="description" content="Paste any Ethereum address. Get a comprehensive developer expertise profile — contracts deployed, verification rate, domain specialization, trust score. Powered by Xiaomi MiMo V2.5." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='80' font-size='80'%3E%F0%9F%9B%A0%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#070710;
+  --panel:#0e0e1c;
+  --panel2:#16162a;
+  --line:rgba(255,255,255,.07);
+  --line2:rgba(255,255,255,.13);
+  --text:#f5f5fa;
+  --muted:#7a7a92;
+  --acc:#06b6d4;
+  --acc2:#0891b2;
+  --grad:linear-gradient(135deg,#06b6d4 0%,#3b82f6 50%,#8b5cf6 100%);
+  --good:#22c55e;
+  --warn:#f59e0b;
+  --bad:#ef4444;
+  --critical:#dc2626;
+  --shadow:0 24px 56px -16px rgba(6,182,212,.4);
+}
+[data-theme="light"]{
+  --bg:#fbf9f4;
+  --panel:#ffffff;
+  --panel2:#f7f4ed;
+  --line:rgba(10,10,20,.10);
+  --line2:rgba(10,10,20,.20);
+  --text:#0a0a14;
+  --muted:#3f3f55;
+  --acc:#0e7490;
+  --acc2:#1d4ed8;
+  --grad:linear-gradient(135deg,#0e7490 0%,#1d4ed8 50%,#6d28d9 100%);
+}
+html{font-size:16px}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;line-height:1.5;transition:background .3s,color .3s}
+body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse at top,rgba(6,182,212,.12),transparent 60%),radial-gradient(ellipse at bottom right,rgba(139,92,246,.10),transparent 60%);pointer-events:none;z-index:0}
+nav.nav{position:sticky;top:0;z-index:50;display:flex;justify-content:space-between;align-items:center;padding:14px clamp(16px,3vw,32px);background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.logo{font-weight:900;font-size:clamp(15px,1.6vw,17px);letter-spacing:-.02em;display:flex;align-items:center;gap:10px}
+.logo-icon{width:30px;height:30px;border-radius:8px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:var(--shadow)}
+.logo span{background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-weight:900}
+.nav-actions{display:flex;align-items:center;gap:8px}
+.btn-icon{width:40px;height:40px;border-radius:10px;border:1px solid var(--line2);background:var(--panel);font-size:16px;display:flex;align-items:center;justify-content:center;transition:.2s;cursor:pointer;color:var(--text)}
+.btn-icon:hover{border-color:var(--acc);background:var(--panel2);transform:translateY(-1px)}
+main{max-width:1100px;margin:0 auto;padding:clamp(24px,4vw,48px) clamp(16px,3vw,32px) 64px;position:relative;z-index:1}
+.hero{text-align:center;margin-bottom:clamp(28px,4vw,48px)}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;background:color-mix(in srgb,var(--acc) 12%,transparent);border:1px solid color-mix(in srgb,var(--acc) 35%,transparent);border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--acc);margin-bottom:18px}
+.eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--good);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+h1.title{font-size:clamp(32px,5.5vw,56px);font-weight:900;letter-spacing:-.025em;line-height:1.05;margin-bottom:14px;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.subtitle{font-size:clamp(14px,1.7vw,17px);color:var(--muted);max-width:680px;margin:0 auto 22px;line-height:1.6}
+.subtitle strong{color:var(--text)}
+.feature-pills{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-bottom:32px}
+.feature-pill{padding:6px 14px;background:var(--panel);border:1px solid var(--line);border-radius:18px;font-size:11px;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:5px}
+.feature-pill::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--good)}
+.feature-pill.hot::before{background:var(--acc)}
+.search-card{padding:clamp(20px,3vw,32px);background:var(--panel);border:1px solid var(--line2);border-radius:22px;box-shadow:0 24px 56px -28px rgba(0,0,0,.6);margin-bottom:24px}
+[data-theme="light"] .search-card{box-shadow:0 24px 56px -28px rgba(10,10,20,.18)}
+.search{display:flex;gap:10px;align-items:stretch;margin-bottom:14px}
+.search-input{flex:1;padding:14px 18px;background:var(--panel2);border:1.5px solid var(--line2);border-radius:12px;color:var(--text);font-size:14px;font-family:'JetBrains Mono',monospace;transition:.2s}
+.search-input:focus{outline:none;border-color:var(--acc);background:var(--panel)}
+.btn{padding:14px 22px;border-radius:12px;border:none;font-size:14px;font-weight:700;letter-spacing:.01em;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:8px;font-family:'Inter',sans-serif}
+.btn-primary{background:var(--grad);color:#fff;box-shadow:0 8px 24px -8px rgba(6,182,212,.6)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 12px 32px -8px rgba(6,182,212,.8)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.examples{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.examples-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.ex-pill{padding:8px 13px;background:var(--panel2);border:1px solid var(--line2);border-radius:10px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:.2s;font-family:inherit}
+.ex-pill:hover{border-color:var(--acc);color:var(--acc);background:var(--panel)}
+.ex-pill strong{color:var(--text);font-weight:700;display:block;font-size:11px;margin-bottom:1px}
+.loading{display:none;flex-direction:column;align-items:center;justify-content:center;padding:48px;text-align:center}
+.loading.on{display:flex}
+.spinner{width:48px;height:48px;border:3px solid var(--line);border-top-color:var(--acc);border-radius:50%;animation:spin 1s linear infinite;margin-bottom:14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-step{font-size:13px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+.error{display:none;padding:14px 18px;background:color-mix(in srgb,var(--bad) 12%,transparent);border:1px solid color-mix(in srgb,var(--bad) 40%,transparent);border-radius:12px;color:var(--bad);font-size:13px;font-weight:600}
+.error.on{display:block}
+
+#result{display:none}
+#result.on{display:block}
+.section-title{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin:24px 0 14px;padding-left:16px;border-left:3px solid var(--acc)}
+
+.profile{padding:clamp(18px,3vw,30px);background:var(--panel);border:1.5px solid var(--line2);border-radius:18px;margin-bottom:24px}
+.profile-head{display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:20px;gap:12px}
+.dev-avatar{width:64px;height:64px;border-radius:16px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:var(--shadow)}
+.dev-name{font-size:clamp(20px,2.5vw,26px);font-weight:900;color:var(--text)}
+.dev-tag{font-size:14px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+.dev-addr{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;word-break:break-all;max-width:480px}
+
+.score-wrap{display:flex;flex-direction:column;align-items:center;margin:18px 0}
+.score-gauge{width:240px;height:140px;position:relative}
+.score-arc{stroke-width:18;fill:none;stroke-linecap:round}
+.score-arc-bg{stroke:var(--line2)}
+.score-arc-fill{transition:stroke-dashoffset 1s cubic-bezier(.5,0,.2,1)}
+.score-num{position:absolute;left:0;right:0;bottom:0;text-align:center;font-size:48px;font-weight:900;font-family:'JetBrains Mono',monospace;letter-spacing:-.03em}
+.score-label{position:absolute;left:0;right:0;bottom:-26px;text-align:center;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+
+.tier-tag{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:12px;font-weight:800;font-size:14px;letter-spacing:.04em;text-transform:uppercase;margin-top:14px}
+.tier-novice{background:color-mix(in srgb,#94a3b8 18%,transparent);color:#94a3b8;border:1.5px solid color-mix(in srgb,#94a3b8 50%,transparent)}
+.tier-junior{background:color-mix(in srgb,var(--good) 18%,transparent);color:var(--good);border:1.5px solid color-mix(in srgb,var(--good) 50%,transparent)}
+.tier-mid{background:color-mix(in srgb,var(--acc) 18%,transparent);color:var(--acc);border:1.5px solid color-mix(in srgb,var(--acc) 50%,transparent)}
+.tier-senior{background:color-mix(in srgb,#a855f7 22%,transparent);color:#c084fc;border:1.5px solid color-mix(in srgb,#a855f7 60%,transparent)}
+.tier-elite{background:linear-gradient(135deg,rgba(6,182,212,.22),rgba(139,92,246,.22));color:#fff;border:1.5px solid var(--acc);animation:elite-glow 3s ease-in-out infinite}
+@keyframes elite-glow{0%,100%{box-shadow:0 0 0 0 rgba(6,182,212,.5)}50%{box-shadow:0 0 0 8px rgba(6,182,212,0)}}
+.tier-shady{background:color-mix(in srgb,var(--bad) 18%,transparent);color:var(--bad);border:1.5px solid color-mix(in srgb,var(--bad) 50%,transparent)}
+
+.narrative{padding:18px 20px;background:color-mix(in srgb,var(--acc) 8%,var(--panel));border:1px solid color-mix(in srgb,var(--acc) 30%,transparent);border-left:4px solid var(--acc);border-radius:0 14px 14px 0;font-size:clamp(13px,1.5vw,15px);line-height:1.7;color:var(--text);margin:18px 0}
+.narrative strong{color:var(--acc2);font-weight:700}
+
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:14px 0}
+.stat-card{padding:14px;background:var(--panel2);border:1px solid var(--line);border-radius:12px}
+.stat-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:4px}
+.stat-value{font-size:22px;font-weight:800;color:var(--text);font-family:'JetBrains Mono',monospace;letter-spacing:-.01em;line-height:1.2}
+.stat-sub{font-size:10px;color:var(--muted);margin-top:2px}
+
+.domain-grid{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.domain-pill{padding:8px 14px;background:color-mix(in srgb,var(--acc) 10%,var(--panel));border:1px solid color-mix(in srgb,var(--acc) 40%,transparent);border-radius:20px;font-size:12px;font-weight:700;color:var(--acc);display:flex;align-items:center;gap:6px}
+.domain-pill .domain-count{padding:2px 8px;background:var(--acc);color:var(--bg);border-radius:10px;font-size:10px;font-family:'JetBrains Mono',monospace;font-weight:800}
+
+.contracts-list{display:flex;flex-direction:column;gap:8px;margin:14px 0}
+.contract-row{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;transition:.15s}
+.contract-row:hover{border-color:var(--acc);background:var(--panel)}
+.contract-icon{width:32px;height:32px;border-radius:8px;background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.contract-icon.verified{background:color-mix(in srgb,var(--good) 18%,transparent);color:var(--good)}
+.contract-icon.unverified{background:color-mix(in srgb,var(--warn) 18%,transparent);color:var(--warn)}
+.contract-info{flex:1;min-width:0}
+.contract-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.contract-addr{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+.contract-tag{flex-shrink:0;padding:3px 8px;background:var(--panel);border:1px solid var(--line2);border-radius:6px;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.contract-tag.verified{color:var(--good);border-color:color-mix(in srgb,var(--good) 50%,transparent)}
+.contract-tag.unverified{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 50%,transparent)}
+
+.actions{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap}
+.actions .btn{flex:1;justify-content:center;min-width:180px}
+.btn-secondary{background:var(--panel2);color:var(--text);border:1.5px solid var(--line2)}
+.btn-secondary:hover{border-color:var(--acc);background:var(--panel)}
+
+footer.foot{text-align:center;padding:32px 16px;font-size:12px;color:var(--muted);border-top:1px solid var(--line);margin-top:48px}
+footer a{color:var(--text);text-decoration:none;border-bottom:1px dashed var(--line2)}
+footer a:hover{color:var(--acc);border-color:var(--acc)}
+
+@media (max-width:640px){
+  .nav{padding:12px 14px}
+  .logo span{display:none}
+  .examples-label{display:none}
+  .ex-pill{font-size:11px;padding:7px 11px}
+  .search{flex-direction:column}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+*:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="logo">
+    <div class="logo-icon">🛠️</div>
+    <span>MiMoBuilder</span>
+  </div>
+  <div class="nav-actions">
+    <button class="btn-icon" id="lang-toggle" title="Switch language">🌐</button>
+    <button class="btn-icon" id="theme-toggle" title="Toggle theme">🌙</button>
+  </div>
+</nav>
+
+<main>
+  <section class="hero">
+    <div class="eyebrow"><span class="dot"></span><span data-i18n="eyebrow">DEVELOPER PROFILER · TRUST SCORING</span></div>
+    <h1 class="title" data-i18n="title">Real Builders Show on Chain</h1>
+    <p class="subtitle" data-i18n="subtitle">Paste any Ethereum address. Get a comprehensive <strong>developer expertise profile</strong> — every contract deployed, verification rate, domain specialization, and trust score — explained by Xiaomi MiMo V2.5.</p>
+    <div class="feature-pills">
+      <div class="feature-pill hot" data-i18n="pill-1">Builder Score 0-100</div>
+      <div class="feature-pill" data-i18n="pill-2">Trust Tier · 6 Levels</div>
+      <div class="feature-pill" data-i18n="pill-3">Powered by MiMo V2.5</div>
+      <div class="feature-pill" data-i18n="pill-4">Free · No Key</div>
+    </div>
+  </section>
+
+  <div class="search-card">
+    <div class="search">
+      <input class="search-input" id="addr-input" type="text" placeholder="0x... wallet address or ENS" autocomplete="off" spellcheck="false" />
+      <button class="btn btn-primary" id="go-btn" data-i18n="profile-btn">🛠️ Profile →</button>
+    </div>
+    <div class="examples">
+      <span class="examples-label" data-i18n="try-label">Try:</span>
+      <button class="ex-pill" data-addr="0x36928500bc1dcd7af6a2b4008875cc336b927d57" title="USDT Tether deployer"><strong>USDT Dev</strong>Tether deployer</button>
+      <button class="ex-pill" data-addr="0x9aa99c23f67c81701c772b106b4f83f6e858dd2e" title="Uniswap V3 deployer"><strong>Uniswap Dev</strong>V3 deployer</button>
+      <button class="ex-pill" data-addr="0xb1adceddb2941033a090dd166a462fe1c2029484" title="Aave deployer"><strong>Aave Dev</strong>Protocol deployer</button>
+      <button class="ex-pill" data-addr="vitalik.eth" title="vitalik.eth"><strong>vitalik.eth</strong>Founder</button>
+    </div>
+    <div class="error" id="error"></div>
+  </div>
+
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <div class="loading-step" id="loading-step">profiling developer wallet</div>
+  </div>
+
+  <div id="result"></div>
+</main>
+
+<footer class="foot">
+  Built with 🧠 <strong>Xiaomi MiMo V2.5</strong> · <a href="https://github.com/gyoomei/mimobuilder" target="_blank">GitHub</a> · <a href="https://eth.blockscout.com" target="_blank">Blockscout</a> · © 2026 MiMoBuilder
+</footer>
+
+<script src="app.js?v=1"></script>
+</body>
+</html>
