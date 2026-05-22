@@ -7,10 +7,79 @@
 // CONFIG
 // ─────────────────────────────────────────────────────────────
 const ENS_API = 'https://api.ensideas.com/ens/resolve';
-const BLOCKSCOUT = 'https://eth.blockscout.com/api/v2';
+
+// Multi-chain Blockscout endpoints (all free, no key)
+const CHAINS = {
+  eth:      { name: 'Ethereum', short: 'ETH',     api: 'https://eth.blockscout.com/api/v2',      explorer: 'https://eth.blockscout.com',      color: '#627eea' },
+  base:     { name: 'Base',     short: 'BASE',    api: 'https://base.blockscout.com/api/v2',     explorer: 'https://base.blockscout.com',     color: '#0052ff' },
+  arbitrum: { name: 'Arbitrum', short: 'ARB',     api: 'https://arbitrum.blockscout.com/api/v2', explorer: 'https://arbitrum.blockscout.com', color: '#28a0f0' },
+  polygon:  { name: 'Polygon',  short: 'MATIC',   api: 'https://polygon.blockscout.com/api/v2',  explorer: 'https://polygon.blockscout.com',  color: '#8247e5' },
+  gnosis:   { name: 'Gnosis',   short: 'GNO',     api: 'https://gnosis.blockscout.com/api/v2',   explorer: 'https://gnosis.blockscout.com',   color: '#04795b' },
+  zksync:   { name: 'zkSync',   short: 'ZK',      api: 'https://zksync.blockscout.com/api/v2',   explorer: 'https://zksync.blockscout.com',   color: '#1e69ff' },
+};
 
 let lang = localStorage.getItem('mimobuilder-lang') || 'en';
+let chain = localStorage.getItem('mimobuilder-chain') || 'eth';
 let lastResult = null;
+
+function api() { return CHAINS[chain].api; }
+function explorer() { return CHAINS[chain].explorer; }
+
+// Chain-specific example developer wallets (verified working)
+const CHAIN_EXAMPLES = {
+  eth: [
+    { addr: '0x36928500bc1dcd7af6a2b4008875cc336b927d57', label: 'USDT Dev',     sub: 'Tether deployer' },
+    { addr: '0x51f22ac850d29c879367a77d241734acb276b815', label: 'AAVE Dev',     sub: 'Lending protocol' },
+    { addr: '0x6c9fc64a53c1b71fb3f9af64d1ae3a4931a5f4e9', label: 'Uniswap Dev',  sub: 'V3 deployer' },
+    { addr: 'vitalik.eth',                               label: 'vitalik.eth',  sub: 'Founder' },
+  ],
+  base: [
+    { addr: '0xe83f922c34a1962e9ae9f52b59e18239764f2818', label: 'Aerodrome',   sub: 'DEX deployer' },
+    { addr: '0xdd9176ea3e7559d6b68b537ef555d3e89403f742', label: 'Friend.tech', sub: 'Shares deployer' },
+  ],
+  arbitrum: [
+    { addr: '0x9ab2de34a33fb459b538c43f251eb825645e8595', label: 'GMX V2',      sub: 'Perps protocol' },
+  ],
+  polygon: [
+    { addr: '0x476307dac3fd170166e007fcaa14f0a129721463', label: 'Quickswap',   sub: 'V2 factory dev' },
+  ],
+  gnosis: [
+    { addr: '0xe91d153e0b41518a2ce8dd3d7944fa863463a97d', label: 'WXDAI',       sub: 'Wrapped XDAI' },
+  ],
+  zksync: [
+    { addr: '0x000000000000000000000000000000000000800a', label: 'L2 ETH',      sub: 'System contract' },
+  ],
+};
+
+function renderExamples() {
+  const row = document.getElementById('examples-row');
+  if (!row) return;
+  const examples = CHAIN_EXAMPLES[chain] || [];
+  // Keep first child (label), wipe rest
+  while (row.children.length > 1) row.removeChild(row.lastChild);
+  for (const ex of examples) {
+    const btn = document.createElement('button');
+    btn.className = 'ex-pill';
+    btn.setAttribute('data-addr', ex.addr);
+    btn.title = `${ex.label} — ${ex.sub}`;
+    btn.innerHTML = `<strong>${ex.label}</strong>${ex.sub}`;
+    btn.onclick = () => {
+      document.getElementById('addr-input').value = ex.addr;
+      profile(ex.addr);
+    };
+    row.appendChild(btn);
+  }
+}
+
+function setChain(c) {
+  if (!CHAINS[c]) return;
+  chain = c;
+  localStorage.setItem('mimobuilder-chain', c);
+  document.querySelectorAll('.chain-pill').forEach(p => {
+    p.classList.toggle('active', p.getAttribute('data-chain') === c);
+  });
+  renderExamples();
+}
 
 // ─────────────────────────────────────────────────────────────
 // I18N
@@ -26,6 +95,7 @@ const I18N = {
     'pill-4': 'Free · No Key',
     'profile-btn': '🛠️ Profile →',
     'try-label': 'Try:',
+    'chain-label': 'Chain:',
     'tier-novice': 'NOT A BUILDER',
     'tier-junior': 'JUNIOR DEV',
     'tier-mid': 'MID-LEVEL DEV',
@@ -59,6 +129,7 @@ const I18N = {
     'pill-4': 'Gratis · Tanpa Key',
     'profile-btn': '🛠️ Profile →',
     'try-label': 'Coba:',
+    'chain-label': 'Chain:',
     'tier-novice': 'BUKAN BUILDER',
     'tier-junior': 'JUNIOR DEV',
     'tier-mid': 'MID-LEVEL DEV',
@@ -158,7 +229,7 @@ async function resolveENS(name) {
 async function fetchAddrInfo(addr) {
   if (!addr || !/^0x[a-f0-9]{40}$/i.test(addr)) return null;
   try {
-    const r = await fetch(`${BLOCKSCOUT}/addresses/${addr}`);
+    const r = await fetch(`${api()}/addresses/${addr}`);
     if (!r.ok) return null;
     return r.json();
   } catch { return null; }
@@ -167,7 +238,7 @@ async function fetchAddrInfo(addr) {
 async function fetchInternalTxs(addr) {
   // Blockscout returns paginated internal txs, look for `type: create`
   try {
-    const r = await fetch(`${BLOCKSCOUT}/addresses/${addr}/internal-transactions`);
+    const r = await fetch(`${api()}/addresses/${addr}/internal-transactions`);
     if (!r.ok) return [];
     const data = await r.json();
     return data.items || [];
@@ -176,7 +247,7 @@ async function fetchInternalTxs(addr) {
 
 async function fetchContractInfo(contractAddr) {
   try {
-    const r = await fetch(`${BLOCKSCOUT}/addresses/${contractAddr}`);
+    const r = await fetch(`${api()}/addresses/${contractAddr}`);
     if (!r.ok) return null;
     return r.json();
   } catch { return null; }
@@ -189,7 +260,7 @@ async function fetchDeployedContracts(addr, maxPages = 5) {
   const created = [];
 
   // 1) Try internal-transactions: best signal for create operations
-  let next = `${BLOCKSCOUT}/addresses/${addr}/internal-transactions`;
+  let next = `${api()}/addresses/${addr}/internal-transactions`;
   let page = 0;
   while (next && page < maxPages) {
     page++;
@@ -213,7 +284,7 @@ async function fetchDeployedContracts(addr, maxPages = 5) {
       const np = data.next_page_params;
       if (np) {
         const params = new URLSearchParams(np);
-        next = `${BLOCKSCOUT}/addresses/${addr}/internal-transactions?${params}`;
+        next = `${api()}/addresses/${addr}/internal-transactions?${params}`;
       } else {
         next = null;
       }
@@ -221,7 +292,7 @@ async function fetchDeployedContracts(addr, maxPages = 5) {
   }
 
   // 2) Also walk normal txs from this address — deployment txs have to=null
-  let txNext = `${BLOCKSCOUT}/addresses/${addr}/transactions?filter=from`;
+  let txNext = `${api()}/addresses/${addr}/transactions?filter=from`;
   page = 0;
   while (txNext && page < maxPages) {
     page++;
@@ -245,7 +316,7 @@ async function fetchDeployedContracts(addr, maxPages = 5) {
       const np = data.next_page_params;
       if (np) {
         const params = new URLSearchParams(np);
-        txNext = `${BLOCKSCOUT}/addresses/${addr}/transactions?filter=from&${params}`;
+        txNext = `${api()}/addresses/${addr}/transactions?filter=from&${params}`;
       } else {
         txNext = null;
       }
@@ -455,7 +526,7 @@ function renderResult(addr, addrInfo, contracts) {
       <div class="profile-head">
         <div class="dev-avatar">🛠️</div>
         <div class="dev-name">${displayName}</div>
-        <div class="dev-tag">${ensName ? fmtAddr(addr) : (lang==='en'?'Developer wallet':'Wallet developer')}</div>
+        <div class="dev-tag">${ensName ? fmtAddr(addr) : (lang==='en'?'Developer wallet':'Wallet developer')} · <span style="color:${CHAINS[chain].color};font-weight:700">${CHAINS[chain].name}</span></div>
         <div class="dev-addr">${addr}</div>
       </div>
       <div class="score-wrap">
@@ -510,7 +581,7 @@ function renderResult(addr, addrInfo, contracts) {
               <div class="contract-name">${c.name || `<span style="color:var(--muted);font-weight:500;font-style:italic">${t('no-name')}</span>`}</div>
               <div class="contract-addr">${c.address}</div>
             </div>
-            <a class="contract-tag ${c.is_verified ? 'verified' : 'unverified'}" href="https://eth.blockscout.com/address/${c.address}" target="_blank" rel="noopener">${c.is_verified ? t('verified') : t('unverified')}</a>
+            <a class="contract-tag ${c.is_verified ? 'verified' : 'unverified'}" href="${explorer()}/address/${c.address}" target="_blank" rel="noopener">${c.is_verified ? t('verified') : t('unverified')}</a>
           </div>
         `).join('')}
       </div>
@@ -539,7 +610,7 @@ function renderResult(addr, addrInfo, contracts) {
 
 function shareProfile() {
   if (!lastResult) return;
-  const url = `${location.origin}${location.pathname}#${encodeURIComponent(lastResult.addr)}`;
+  const url = `${location.origin}${location.pathname}?chain=${chain}#${encodeURIComponent(lastResult.addr)}`;
   navigator.clipboard?.writeText(url);
   const btn = document.getElementById('share-btn');
   const orig = btn.innerHTML;
@@ -639,8 +710,14 @@ if (urlLang === 'en' || urlLang === 'id') {
   localStorage.setItem('mimobuilder-lang', urlLang);
   lang = urlLang;
 }
+const urlChain = new URLSearchParams(location.search).get('chain');
+if (urlChain && CHAINS[urlChain]) {
+  chain = urlChain;
+  localStorage.setItem('mimobuilder-chain', urlChain);
+}
 setTheme(localStorage.getItem('mimobuilder-theme') || 'dark');
 setLang(lang);
+setChain(chain);
 
 // ─────────────────────────────────────────────────────────────
 // EVENTS
@@ -650,12 +727,8 @@ document.getElementById('addr-input').addEventListener('keydown', e => {
   if (e.key === 'Enter') profile(e.target.value);
 });
 
-document.querySelectorAll('.ex-pill').forEach(btn => {
-  btn.onclick = () => {
-    const a = btn.getAttribute('data-addr');
-    document.getElementById('addr-input').value = a;
-    profile(a);
-  };
+document.querySelectorAll('.chain-pill').forEach(p => {
+  p.onclick = () => setChain(p.getAttribute('data-chain'));
 });
 
 document.getElementById('lang-toggle').onclick = () => setLang(lang === 'en' ? 'id' : 'en');

@@ -76,6 +76,14 @@ h1.title{font-size:clamp(32px,5.5vw,56px);font-weight:900;letter-spacing:-.025em
 .ex-pill{padding:8px 13px;background:var(--panel2);border:1px solid var(--line2);border-radius:10px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:.2s;font-family:inherit}
 .ex-pill:hover{border-color:var(--acc);color:var(--acc);background:var(--panel)}
 .ex-pill strong{color:var(--text);font-weight:700;display:block;font-size:11px;margin-bottom:1px}
+
+.chain-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.chain-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-right:4px}
+.chain-pill{padding:6px 11px;background:var(--panel2);border:1px solid var(--line2);border-radius:8px;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;transition:.2s;font-family:inherit;display:inline-flex;align-items:center;gap:6px}
+.chain-pill::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--chain-color, var(--muted))}
+.chain-pill:hover{border-color:var(--chain-color, var(--acc));color:var(--text)}
+.chain-pill.active{background:var(--chain-color, var(--acc));border-color:var(--chain-color, var(--acc));color:#fff}
+.chain-pill.active::before{background:#fff}
 .loading{display:none;flex-direction:column;align-items:center;justify-content:center;padding:48px;text-align:center}
 .loading.on{display:flex}
 .spinner{width:48px;height:48px;border:3px solid var(--line);border-top-color:var(--acc);border-radius:50%;animation:spin 1s linear infinite;margin-bottom:14px}
@@ -187,16 +195,22 @@ footer a:hover{color:var(--acc);border-color:var(--acc)}
   </section>
 
   <div class="search-card">
+    <div class="chain-row" id="chain-row">
+      <span class="chain-label" data-i18n="chain-label">Chain:</span>
+      <button class="chain-pill" data-chain="eth"      style="--chain-color:#627eea">Ethereum</button>
+      <button class="chain-pill" data-chain="base"     style="--chain-color:#0052ff">Base</button>
+      <button class="chain-pill" data-chain="arbitrum" style="--chain-color:#28a0f0">Arbitrum</button>
+      <button class="chain-pill" data-chain="polygon"  style="--chain-color:#8247e5">Polygon</button>
+      <button class="chain-pill" data-chain="gnosis"   style="--chain-color:#04795b">Gnosis</button>
+      <button class="chain-pill" data-chain="zksync"   style="--chain-color:#1e69ff">zkSync</button>
+    </div>
     <div class="search">
       <input class="search-input" id="addr-input" type="text" placeholder="0x... wallet address or ENS" autocomplete="off" spellcheck="false" />
       <button class="btn btn-primary" id="go-btn" data-i18n="profile-btn">🛠️ Profile →</button>
     </div>
-    <div class="examples">
+    <div class="examples" id="examples-row">
       <span class="examples-label" data-i18n="try-label">Try:</span>
-      <button class="ex-pill" data-addr="0x36928500bc1dcd7af6a2b4008875cc336b927d57" title="USDT Tether deployer"><strong>USDT Dev</strong>Tether deployer</button>
-      <button class="ex-pill" data-addr="0x51f22ac850d29c879367a77d241734acb276b815" title="AAVE Protocol deployer"><strong>AAVE Dev</strong>Protocol deployer</button>
-      <button class="ex-pill" data-addr="0x6c9fc64a53c1b71fb3f9af64d1ae3a4931a5f4e9" title="Uniswap V3 Factory deployer"><strong>Uniswap Dev</strong>V3 deployer</button>
-      <button class="ex-pill" data-addr="vitalik.eth" title="vitalik.eth — founder, mostly user wallet"><strong>vitalik.eth</strong>Founder</button>
+      <!-- examples populated by JS based on selected chain -->
     </div>
     <div class="error" id="error"></div>
   </div>
@@ -213,6 +227,6 @@ footer a:hover{color:var(--acc);border-color:var(--acc)}
   Built with 🧠 <strong>Xiaomi MiMo V2.5</strong> · <a href="https://github.com/gyoomei/mimobuilder" target="_blank">GitHub</a> · <a href="https://eth.blockscout.com" target="_blank">Blockscout</a> · © 2026 MiMoBuilder
 </footer>
 
-<script src="app.js?v=2"></script>
+<script src="app.js?v=3"></script>
 </body>
 </html>
