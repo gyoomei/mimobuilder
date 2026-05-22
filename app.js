@@ -428,7 +428,7 @@ function buildNarrative(addr, contracts, score, tier, domains, oldestTs) {
 
   if (lang === 'en') {
     const parts = [];
-    parts.push(`This developer has deployed <strong>${total} contract${total>1?'s':''}</strong> on Ethereum, with <strong>${verified}</strong> verified (<strong>${fmtPct(verifyRate)} verification rate</strong>).`);
+    parts.push(`This developer has deployed <strong>${total} contract${total>1?'s':''}</strong> on ${CHAINS[chain].name}, with <strong>${verified}</strong> verified (<strong>${fmtPct(verifyRate)} verification rate</strong>).`);
 
     if (age) parts.push(`Active for <strong>${age.text}</strong>.`);
 
@@ -441,7 +441,7 @@ function buildNarrative(addr, contracts, score, tier, domains, oldestTs) {
     } else if (tier.level === 'senior') {
       parts.push(`<strong>Senior developer</strong> — substantial deployment history with strong verification discipline. Reliable hire for production work.`);
     } else if (tier.level === 'mid') {
-      parts.push(`<strong>Mid-level developer</strong> — solid track record building on Ethereum. Good fit for contributor roles.`);
+      parts.push(`<strong>Mid-level developer</strong> — solid track record building on ${CHAINS[chain].name}. Good fit for contributor roles.`);
     } else if (tier.level === 'junior') {
       parts.push(`<strong>Junior or part-time builder</strong> — has shipped contracts, but limited in volume or domain breadth. Suitable for entry roles or audited supervision.`);
     } else if (tier.level === 'shady') {
@@ -452,7 +452,7 @@ function buildNarrative(addr, contracts, score, tier, domains, oldestTs) {
     return parts.join(' ');
   } else {
     const parts = [];
-    parts.push(`Developer ini telah men-deploy <strong>${total} kontrak</strong> di Ethereum, dengan <strong>${verified}</strong> terverifikasi (<strong>rasio verify ${fmtPct(verifyRate)}</strong>).`);
+    parts.push(`Developer ini telah men-deploy <strong>${total} kontrak</strong> di ${CHAINS[chain].name}, dengan <strong>${verified}</strong> terverifikasi (<strong>rasio verify ${fmtPct(verifyRate)}</strong>).`);
 
     if (age) parts.push(`Aktif selama <strong>${age.text}</strong>.`);
 
@@ -465,7 +465,7 @@ function buildNarrative(addr, contracts, score, tier, domains, oldestTs) {
     } else if (tier.level === 'senior') {
       parts.push(`<strong>Developer senior</strong> — track record deploy substansial dengan disiplin verifikasi kuat. Hire reliable untuk kerjaan production.`);
     } else if (tier.level === 'mid') {
-      parts.push(`<strong>Developer mid-level</strong> — track record solid build di Ethereum. Cocok untuk peran kontributor.`);
+      parts.push(`<strong>Developer mid-level</strong> — track record solid build di ${CHAINS[chain].name}. Cocok untuk peran kontributor.`);
     } else if (tier.level === 'junior') {
       parts.push(`<strong>Builder junior atau part-time</strong> — sudah ship kontrak, tapi terbatas dalam volume atau breadth domain. Cocok untuk peran entry atau supervisi audit.`);
     } else if (tier.level === 'shady') {
