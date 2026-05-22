@@ -88,7 +88,7 @@ const I18N = {
   en: {
     'eyebrow': 'DEVELOPER PROFILER · TRUST SCORING',
     'title': 'Real Builders Show on Chain',
-    'subtitle': 'Paste any Ethereum address. Get a comprehensive <strong>developer expertise profile</strong> — every contract deployed, verification rate, domain specialization, and trust score — explained by Xiaomi MiMo V2.5.',
+    'subtitle': 'Paste any EVM wallet address across 6 chains. Get a comprehensive <strong>developer expertise profile</strong> — every contract deployed, verification rate, domain specialization, and trust score — explained by Xiaomi MiMo V2.5.',
     'pill-1': 'Builder Score 0-100',
     'pill-2': 'Trust Tier · 6 Levels',
     'pill-3': 'Powered by MiMo V2.5',
@@ -122,7 +122,7 @@ const I18N = {
   id: {
     'eyebrow': 'PROFILER DEVELOPER · TRUST SCORING',
     'title': 'Builder Sejati Terlihat di Chain',
-    'subtitle': 'Tempel alamat Ethereum apa saja. Dapatkan <strong>profil keahlian developer komprehensif</strong> — setiap kontrak yang di-deploy, tingkat verifikasi, spesialisasi domain, dan skor kepercayaan — dijelaskan oleh Xiaomi MiMo V2.5.',
+    'subtitle': 'Tempel alamat wallet EVM apa saja di 6 chain. Dapatkan <strong>profil keahlian developer komprehensif</strong> — setiap kontrak yang di-deploy, tingkat verifikasi, spesialisasi domain, dan skor kepercayaan — dijelaskan oleh Xiaomi MiMo V2.5.',
     'pill-1': 'Skor Builder 0-100',
     'pill-2': 'Trust Tier · 6 Level',
     'pill-3': 'Powered by MiMo V2.5',
